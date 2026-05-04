@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Auth UI</title>
+
+<style>
+* {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body {
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(-45deg, #667eea, #764ba2, #00c6ff, #0072ff);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+.wrapper {
+    width:380px;
+    overflow:hidden;
+    perspective:1000px;
+}
+
+.slider {
+    display:flex;
+    width:760px;
+    transition:0.6s ease-in-out;
+}
+
+/* Card */
+.container {
+    width:380px;
+    padding:35px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(20px);
+    color:blue;
+    box-shadow:0 10px 40px rgba(0,0,0,0.3);
+}
+
+/* Title */
+h2 {
+    text-align:center;
+    margin-bottom:20px;
+}
+
+/* Input */
+.input-group {
+    position:relative;
+    margin-bottom:20px;
+}
+
+.input-group select {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-bottom: 2px solid #fff;
+    background: rgba(255,255,255,0.1); /* 👈 give slight background */
+    color: blue; /* 👈 text color */
+    outline: none;
+    border-radius: 5px;
+}
+
+/* Dropdown options (important fix) */
+.input-group select option {
+    color: #000;       /* 👈 visible text */
+    background: #fff;  /* 👈 dropdown background */
+}
+
+.input-group input,
+.input-group select {
+    width:100%;
+    padding:10px;
+    border:none;
+    border-bottom:2px solid #fff;
+    background:transparent;
+    color:#fff;
+    outline:none;
+}
+
+.input-group label {
+    position:absolute;
+    left:0;
+    top:10px;
+    font-size:14px;
+    color:#ddd;
+    transition:0.3s;
+}
+
+.input-group input:focus + label,
+.input-group input:valid + label {
+    top:-10px;
+    font-size:12px;
+    color:#00f2fe;
+}
+
+/* Password toggle */
+.toggle {
+    position:absolute;
+    right:5px;
+    top:10px;
+    cursor:pointer;
+}
+
+/* Strength bar */
+.strength {
+    height:5px;
+    border-radius:5px;
+    margin-top:5px;
+}
+
+.weak {background:red}
+.medium {background:orange}
+.strong {background:lime}
+
+/* Button */
+.btn {
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:25px;
+    background:linear-gradient(135deg,#00f2fe,#4facfe);
+    color:#fff;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.btn:hover {
+    transform:scale(1.05);
+}
+
+/* Footer */
+.footer {
+    text-align:center;
+    margin-top:10px;
+}
+
+.footer a {
+    color:#00f2fe;
+    cursor:pointer;
+}
+
+/* Error */
+.error {
+    color:#ff6b6b;
+    font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+<div class="slider" id="slider">
+
+<!-- REGISTER -->
+<div class="container">
+<h2>Create Account</h2>
+
+<form action="http://localhost:8080/servlets/demo" method="get" onsubmit="return validateRegister()">
+
+<div class="input-group">
+<input type="text" id="name" name ="fullname" required>
+<label>Full Name</label>
+</div>
+
+<div class="input-group">
+<input type="email" id="email" name="Email" required>
+<label>Email</label>
+</div>
+
+<div class="input-group">
+<input type="password" id="password" name="password" required onkeyup="checkStrength()">
+<label>Password</label>
+<span class="toggle" onclick="togglePass('password')">👁️</span>
+<div id="strengthBar" class="strength"></div>
+</div>
+
+<div class="input-group">
+<input type="password" id="confirm" name="conform_password" required>
+<label>Confirm Password</label>
+</div>
+
+<p id="errorMsg" class="error"></p>
+
+<div class="input-group">
+  <select name="course" >
+    <option value="">Select Course</option>
+    <option value="Data Science">Data Science</option>
+    <option value="Java Full Stack">Java Full Stack</option>
+    <option value="Python Full Stack">Python Full Stack</option>
+    <option value="Data Analysis">Data Analysis</option>
+  </select>
+</div>
+
+<button class="btn">Register</button>
+</form>
+
+<div class="footer">
+Already have account? <a onclick="showLogin()">Login</a>
+<p id="errorMsg" style="color:red;"></p>
+</div>
+</div>
+
+<!-- LOGIN -->
+<div class="container">
+<h2>Welcome Back</h2>
+
+<form action="http://localhost:8080/servlets/demo2" method="post">
+
+<div class="input-group">
+<input type="email" name="login_Email"  required>
+<label>Email</label>
+</div>
+
+<div class="input-group">
+<input type="password" id="loginPassword" name="login_Password" required>
+<label>Password</label>
+<span class="toggle" onclick="togglePass('loginPassword')">👁️</span>
+</div>
+
+<div style="margin-bottom:10px;font-size:13px;">
+<input type="checkbox"> Remember me
+<span style="float:right;cursor:pointer;">Forgot?</span>
+</div>
+
+<button class="btn">Login</button>
+</form>
+
+<div class="footer">
+Don't have account? <a onclick="showRegister()">Register</a>
+
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+function showLogin(){
+    document.getElementById("slider").style.transform="translateX(-380px)";
+}
+
+function showRegister(){
+    document.getElementById("slider").style.transform="translateX(0)";
+}
+
+/* Toggle password */
+function togglePass(id){
+    let input=document.getElementById(id);
+    input.type=input.type==="password"?"text":"password";
+}
+
+/* Password strength */
+function checkStrength(){
+    let pass=document.getElementById("password").value;
+    let bar=document.getElementById("strengthBar");
+
+    if(pass.length<5){
+        bar.className="strength weak";
+    } else if(pass.match(/[A-Z]/) && pass.match(/[0-9]/)){
+        bar.className="strength strong";
+    } else {
+        bar.className="strength medium";
+    }
+}
+
+/* Validation */
+function validateRegister(){
+    let pass=document.getElementById("password").value;
+    let confirm=document.getElementById("confirm").value;
+    let error=document.getElementById("errorMsg");
+
+    if(pass!==confirm){
+        error.innerText="Passwords do not match!";
+        return false;
+    }
+    return true;
+}
+
+const params = new URLSearchParams(window.location.search);
+if(params.get("error") === "email"){
+/* 	document.getElementById("errorMsg").innerText =
+        "Password or Email Already Exists... Try Another Inputs"; */
+        alert("Email already exists! Try another.");
+   
+	
+	showRegister();
+}
+</script>
+
+</body>
+</html>
